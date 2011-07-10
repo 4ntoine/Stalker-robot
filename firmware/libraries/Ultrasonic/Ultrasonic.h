@@ -1,6 +1,11 @@
 /*
-  Ultrasonic.h - Library for HR-SC04 sensor  
-  Created by 4ntoine. July 2, 2011
+  Ultrasonic.h - Library for HC-SR04 sensor
+  
+  Features:
+	1. measurement series for accurate values
+	2. filters bad measurement values 
+	
+  Created by 4ntoine. July 10, 2011
 */
 
 #ifndef Ultrasonic_h
@@ -14,15 +19,6 @@ class Ultrasonic
 {
   public:
 	Ultrasonic(int trigPin, int echoPin);
-	Ultrasonic(int trigPin, int echoPin, int vccPin);
-	
-	// switch on
-    // (if vccPin is specified)
-	void begin();
-	
-	// switch off
-	// (if vccPin is specified)
-	void end();
 	
     // mm
 	int getDistance();
@@ -37,9 +33,8 @@ class Ultrasonic
 	int getDistanceAccurate(byte measurements, AVG_STRATEGY avgStrategy);
 
   protected:
-    int _trigPin, _echoPin, _vccPin;
+    int _trigPin, _echoPin;
 
-	void init(int vccPin, int trigPin, int echoPin);
 	void trigger();	
 	long getDuration();
 	int durationToMm(long duration);
