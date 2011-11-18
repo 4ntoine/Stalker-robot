@@ -1,0 +1,14 @@
+5v - 5v
+gnd - gnd
+
+3 - M4.speed
+4 - M4.dir
+
+6 - M3.speed
+7 - M3.dir
+
+8 - M2.dir
+9 - M2.speed
+
+11 - M1.speed
+12 - M1.dir
