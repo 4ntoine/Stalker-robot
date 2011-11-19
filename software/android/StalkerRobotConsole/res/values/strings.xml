@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">StalkerRobotConsole</string>
+    <string name="searchDevices">Search</string>
+    <string name="on">On</string>
+    <string name="off">Off</string>
+    <string name="connect">Connect</string>
+    <string name="connected">Connected</string>
+    <string name="connecting">Connecting ...</string>
+    <string name="adding">Adding {0}({1})</string>
+    <string name="disconnect">Disconnect</string>
+    <string name="disconnected">Disconnected</string>
+    <string name="pairing">Pairing with {0}({1}) ...</string>
+    <string name="paired">Paired</string>
+    <string name="send">Send</string>
+
+    <string name="failedToConnect">Failed to connect to device</string>
+    <string name="failedToDisconnect">Failed to disconnect</string>
+    <string name="ioError">IO Error</string>
+    <string name="sendFailed">Failed to send data</string>
+    <string name="connectFailed">Failed to createRfcommSocketToServiceRecord</string>
+    <string name="disconnectFailed">Failed to disconnect</string>
+
+    <string name="discovery">Bluetooth discovery {0}</string>
+    <string name="started">started</string>
+    <string name="starting">starting</string>
+    <string name="finished">finished</string>
+    <string name="sending">Sending: {0}</string>
+
+    <string name="received">Received: {0}</string>
+    <string name="clearLog">Clear log</string>
+
+    <string name="bluetoothStatus.On">Bluetooth ON</string>
+    <string name="bluetoothStatus.Off">Bluetooth OFF</string>
+    <string name="bluetoothStatus.Turning_Off">Bluetooth TURNING OFF</string>
+    <string name="bluetoothStatus.Turning_On">Bluetooth TURNING ON</string>
+    <string name="bluetoothStatus.Unknown">UNKNOWN Bluetooth status</string>
+</resources>

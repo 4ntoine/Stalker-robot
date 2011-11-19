@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <!-- search devices -->
+        <Button
+            android:id="@+id/searchDevices"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/searchDevices" />
+
+        <!-- disconnect from device -->
+        <Button
+            android:id="@+id/disconnect"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/disconnect"
+            android:layout_toRightOf="@id/searchDevices"/>
+
+        <!-- bluetooth status -->
+        <ToggleButton
+            android:id="@+id/bluetoothStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:textOn="@string/on"
+            android:textOff="@string/off" />
+    </RelativeLayout>
+
+    <!-- devices -->
+    <ListView
+        android:id="@+id/devicesList"
+        android:layout_width="match_parent"
+        android:layout_height="0px"
+        android:layout_weight="1"
+        android:scrollbars="vertical" />
+
+    <!-- log -->
+    <ListView
+        android:id="@+id/logList"
+        android:layout_width="match_parent"
+        android:layout_height="0px"
+        android:layout_weight="2"
+        android:transcriptMode="alwaysScroll"
+        android:listSelector="@null"
+        android:scrollbars="vertical"/>
+
+    <LinearLayout
+        android:id="@+id/sendBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom">
+
+        <!-- edit message -->
+        <EditText
+            android:id="@+id/sendData"
+            android:layout_width="0px"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"/>
+
+        <!-- send button -->
+        <Button
+            android:id="@+id/sendButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:text="@string/send"/>
+    </LinearLayout>
+
+</LinearLayout>
+

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+      package="name.antonsmirnov.android.stalker"
+      android:versionCode="1"
+      android:versionName="1.0">
+
+    <application android:label="@string/app_name" android:icon="@drawable/icon" android:debuggable="true">
+        <activity android:name="MainActivity"
+                  android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- bluetooth status -->
+        <receiver
+            android:name=".bluetooth.receiver.BluetoothStatusReceiver">
+            <intent-filter>
+                <action android:name="android.bluetooth.adapter.action.STATE_CHANGED"/>
+            </intent-filter>
+        </receiver>
+
+        <!-- bluetooth discovery status -->
+        <receiver
+            android:name=".bluetooth.receiver.BluetoothDiscoveryStatusReceiver">
+            <intent-filter>
+                <action android:name="android.bluetooth.adapter.action.DISCOVERY_STARTED"/>
+                <action android:name="android.bluetooth.adapter.action.DISCOVERY_FINISHED"/>
+            </intent-filter>
+        </receiver>
+
+        <!-- bluetooth device -->
+        <receiver
+            android:name=".bluetooth.receiver.BluetoothDeviceReceiver">
+            <intent-filter>
+                <action android:name="android.bluetooth.device.action.FOUND"/>
+            </intent-filter>
+        </receiver>
+
+    </application>
+
+    <supports-screens android:anyDensity="true" android:smallScreens="true" android:normalScreens="true" android:largeScreens="true"/>
+
+    <!-- bluetooth -->
+    <uses-feature android:name="android.hardware.bluetooth" android:required="true" />
+    <uses-permission android:name="android.permission.BLUETOOTH"/>
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
+</manifest>
