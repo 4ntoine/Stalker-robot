@@ -1,0 +1,5 @@
+<!--
+*** GENERATED ANT BUILD SCRIPT SNIPPET - DO NOT EDIT  ***
+***          EDIT ./project.properties INSTEAD        ***
+-->
+<jvmarg value="-Djava.library.path=c:\dev\rxtx"/>
