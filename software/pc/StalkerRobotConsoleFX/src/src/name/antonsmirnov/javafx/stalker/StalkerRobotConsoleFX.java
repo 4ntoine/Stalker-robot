@@ -27,6 +27,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import name.antonsmirnov.firmata.serial.ISerial;
+import name.antonsmirnov.firmata.serial.IndepProcessingSeriaAdapter;
 import name.antonsmirnov.javafx.dialogs.Dialog;
 import name.antonsmirnov.javafx.stalker.log.LogRecord;
 import name.antonsmirnov.javafx.stalker.log.LogRecordType;
@@ -64,7 +65,7 @@ public class StalkerRobotConsoleFX
         addLog(new LogRecord(message, LogRecordType.FROM_DEVICE));
     }
             
-    public void onDataReceived(ISerial is) {
+    public void onDataReceived(IndepProcessingSerial is) {
         String message = is.readString();
         onDataReceived(message);
     }
@@ -75,7 +76,7 @@ public class StalkerRobotConsoleFX
         try {
             indepSerial = new IndepProcessingSerial(port, Integer.parseInt(baudRate));
             indepSerial.setListener(this);
-            serial = indepSerial;
+            serial = new IndepProcessingSeriaAdapter(indepSerial);
             serial.start();
                     
             String logMessage = MessageFormat.format("Connected to {0} at {1}",
