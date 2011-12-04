@@ -19,7 +19,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.Clipboard;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
@@ -28,10 +27,13 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import name.antonsmirnov.firmata.serial.ISerial;
 import name.antonsmirnov.firmata.serial.IndepProcessingSeriaAdapter;
-import name.antonsmirnov.javafx.dialogs.Dialog;
+import name.antonsmirnov.javafx.dialog.Dialog;
 import name.antonsmirnov.javafx.stalker.log.LogRecord;
 import name.antonsmirnov.javafx.stalker.log.LogRecordType;
-import name.antonsmirnov.javafx.stalker.log.factory.*;
+import name.antonsmirnov.javafx.stalker.log.factory.ColorTextCellFactory;
+import name.antonsmirnov.javafx.stalker.log.factory.LogDateTimeCellValueFactory;
+import name.antonsmirnov.javafx.stalker.log.factory.LogRecordCellValueFactory;
+import name.antonsmirnov.javafx.stalker.log.factory.LogRecordTypeCellValueFactory;
 import processing.serial.IndepProcessingSerial;
 
 /**
@@ -41,6 +43,7 @@ import processing.serial.IndepProcessingSerial;
 public class StalkerRobotConsoleFX
     extends Application
     implements IndepProcessingSerial.Listener {
+    
     public static final int NEW_LINE = 10;
 
     private IndepProcessingSerial indepSerial;
@@ -79,17 +82,12 @@ public class StalkerRobotConsoleFX
             serial = new IndepProcessingSeriaAdapter(indepSerial);
             serial.start();
                     
-            String logMessage = MessageFormat.format("Connected to {0} at {1}",
-                    port, baudRate);
+            String logMessage = MessageFormat.format("Connected to {0} at {1}", port, baudRate);
             addLog(new LogRecord(logMessage, LogRecordType.INFO));
         } catch (Throwable t) {
-            String logMessage = MessageFormat.format("Failed to connect to {0} at {1}",
-                    port, baudRate);
+            String logMessage = MessageFormat.format("Failed to connect to {0} at {1}", port, baudRate);
             addLog(new LogRecord(logMessage, LogRecordType.INFO));
-            Dialog.error(
-                "Connection error",
-                logMessage,
-                t);
+            Dialog.showThrowable("Connection error", logMessage, t);
             return;
         }
         
@@ -112,9 +110,7 @@ public class StalkerRobotConsoleFX
         } catch (Throwable t) {
             String logMessage = "Failed to write message to the port";
             addLog(new LogRecord(logMessage, LogRecordType.INFO));
-            Dialog.error(
-                "Port write error", logMessage,
-                t);
+            Dialog.showThrowable("Port write error", logMessage, t);
         }
     }
     
@@ -141,7 +137,7 @@ public class StalkerRobotConsoleFX
             scene.getHeight()
             - toolbar.getHeight()
             - statusPanel.getHeight()     
-            - (messagePanelVisible ? messagePanel.getHeight() /* + 30*/ : 0));
+            - (messagePanelVisible ? messagePanel.getHeight() : 0));
     }
     
     private void alignSendPanel() {
@@ -224,7 +220,7 @@ public class StalkerRobotConsoleFX
 
     private boolean validMessage() {
         if (messageTextEdit.getText().isEmpty()) {
-            Dialog.warning("Message", "Type message first");
+            Dialog.showWarning("Message", "Type message first");
             messageTextEdit.requestFocus();
             return false;
         }
@@ -234,7 +230,7 @@ public class StalkerRobotConsoleFX
     
     private ObservableList<String> ports = FXCollections.observableArrayList();
     
-    private void setWaitForChar() {
+    private void setWaitForCRLF() {
         // do nto chanhe the order
         indepSerial.bufferUntil(NEW_LINE);
         indepSerial.setBufferUntil(cbWaitForCRLF.isSelected());
@@ -304,12 +300,12 @@ public class StalkerRobotConsoleFX
 
             public void handle(ActionEvent t) {
                 if (!validateSettings()) {
-                    Dialog.warning("Connection settings", "Choose port and baud rate first.");
+                    Dialog.showWarning("Connection settings", "Choose port and baud rate first");
                     return;
                 }
                 
                 connect();
-                setWaitForChar();
+                setWaitForCRLF();
             }           
         });
         
@@ -448,7 +444,7 @@ public class StalkerRobotConsoleFX
                         onDataReceived(message);
                     }
                 }
-                setWaitForChar();
+                setWaitForCRLF();
             }            
         });
         
