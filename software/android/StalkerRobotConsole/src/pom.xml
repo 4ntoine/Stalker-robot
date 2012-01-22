@@ -7,7 +7,7 @@
 	
     <groupId>name.antonsmirnov.android.stalker</groupId>
     <artifactId>Console</artifactId>
-    <version>1.0</version>
+    <version>1.1</version>
 	<packaging>apk</packaging>
     <name>StalkerRobotConsole</name>
     <description>Stalker console application</description>    

@@ -4,6 +4,10 @@ import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.view.*;
@@ -24,17 +28,6 @@ public class MainActivity extends Activity {
 
     private Logger logger = LoggerFactory.getLogger(getClass());
 
-    public MainActivity() {
-        super();
-        instance = this;
-    }
-
-    private static MainActivity instance;
-
-    public static MainActivity get() {
-        return instance;
-    }
-
     // ui
     private Button disconnectButton;
     private Button searchDevicesButton;
@@ -47,6 +40,150 @@ public class MainActivity extends Activity {
 
     // misc
     private BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
+    private BroadcastReceiver btDeviceListener;
+    private BroadcastReceiver btDiscoveryStatusReceiver;
+    private BroadcastReceiver btStatusReceiver;
+
+    private void registerBtDeviceReceiver() {
+        btDeviceListener = new BluetoothDeviceReceiver();
+        registerReceiver(btDeviceListener, new IntentFilter("android.bluetooth.device.action.FOUND"));
+    }
+
+    private void registerBtDiscoveryStatusReceiver() {
+        btDiscoveryStatusReceiver = new BluetoothDiscoveryStatusReceiver();
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_STARTED);
+        filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
+        registerReceiver(btDiscoveryStatusReceiver, filter);
+    }
+
+    private void registerBtStatusReceiver() {
+        btStatusReceiver = new BluetoothStatusReceiver();
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(BluetoothAdapter.ACTION_STATE_CHANGED);
+        registerReceiver(btStatusReceiver, filter);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        registerBtDeviceReceiver();
+        registerBtDiscoveryStatusReceiver();
+        registerBtStatusReceiver();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        unregisterReceiver(btDeviceListener);
+        unregisterReceiver(btDiscoveryStatusReceiver);
+        unregisterReceiver(btStatusReceiver);
+    }
+
+    /**
+     * BluetoothDeviceReceiver
+     */
+    private class BluetoothDeviceReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+            addBluetoothDevice(device);
+        }
+    }
+
+    /**
+     * BluetoothDiscoveryStatusReceiver
+     */
+    private class BluetoothDiscoveryStatusReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (BluetoothAdapter.ACTION_DISCOVERY_STARTED.equals(intent.getAction())) {
+                // started
+               enableDiscoveryStatus(false);
+                Toast.makeText(context,
+                        MessageFormat.format(
+                                context.getString(R.string.discovery),
+                                context.getString(R.string.started).toUpperCase()),
+                        Toast.LENGTH_SHORT).show();
+            } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(intent.getAction())) {
+                // finished
+                enableDiscoveryStatus(true);
+                Toast.makeText(context,
+                        MessageFormat.format(
+                                context.getString(R.string.discovery),
+                                context.getString(R.string.finished).toUpperCase()),
+                        Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    /**
+     * BluetoothStatusReceiver
+     */
+    private class BluetoothStatusReceiver extends BroadcastReceiver {
+
+        public BluetoothStatusReceiver() {
+            init();
+        }
+
+        private Map<Integer, BluetoothStatusDescriptor> states = new HashMap<Integer, BluetoothStatusDescriptor>();
+
+        /**
+         *
+         */
+        private class BluetoothStatusDescriptor {
+            private boolean on;
+            private boolean enabled;
+            private int messageId;
+
+            public int getMessageId() {
+                return messageId;
+            }
+
+            public boolean isOn() {
+                return on;
+            }
+
+            public boolean isEnabled() {
+                return enabled;
+            }
+
+            public BluetoothStatusDescriptor(boolean on, boolean enabled, int messageId) {
+                this.on = on;
+                this.enabled = enabled;
+                this.messageId = messageId;
+            }
+        }
+
+        private void init() {
+            states.put(BluetoothAdapter.STATE_OFF, new BluetoothStatusDescriptor(false, true, R.string.bluetoothStatus_Off));
+            states.put(BluetoothAdapter.STATE_ON, new BluetoothStatusDescriptor(true, true, R.string.bluetoothStatus_On));
+            states.put(BluetoothAdapter.STATE_TURNING_OFF, new BluetoothStatusDescriptor(false, false, R.string.bluetoothStatus_Turning_Off));
+            states.put(BluetoothAdapter.STATE_TURNING_ON, new BluetoothStatusDescriptor(true, false, R.string.bluetoothStatus_Turning_On));
+        }
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            int intentStatus = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, -1);
+            BluetoothStatusDescriptor status = states.get(intentStatus);
+            Toast.makeText(
+                    context,
+                    status != null
+                            ? context.getString(status.getMessageId())
+                            : context.getString(R.string.bluetoothStatus_Unknown),
+                    Toast.LENGTH_SHORT)
+                    .show();
+
+            if (status != null) {
+                displayBluetoothStatus(status.isOn());
+                enabledChangeStatus(status.isEnabled());
+            }
+        }
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -253,7 +390,7 @@ public class MainActivity extends Activity {
             public void onCreateContextMenu(ContextMenu menu, View view, final ContextMenu.ContextMenuInfo menuInfo) {
                 menu.clear();
 
-                // edit
+                // connect menu item
                 MenuItem connectItem = menu.add(Menu.NONE, Menu.FIRST, Menu.NONE, R.string.connect);
                 connectItem.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                     public boolean onMenuItemClick(MenuItem item) {
